@@ -139,9 +139,9 @@ if __name__ == '__main__':
     CalcMatrizInversa([[Fraction(math.comb(i, j)) for j in range(50)] for i in range(50)])
     fin1 = time.perf_counter()
     tiempo1 = fin1 - inicio1
-    print(f"El tiempo para calcular la inversa de una matriz 50 por 50 es de {tiempo1:.6f} segundos")
+    print(f"El tiempo para calcular la inversa de una matriz 50 por 50 es de {tiempo1:.6f} segundos.")
     inicio2 = time.perf_counter()
     CalcMatrizInversa([[Fraction(math.comb(i, j)) for j in range(100)] for i in range(100)])
     fin2 = time.perf_counter()
     tiempo2 = fin2 - inicio2
-    print(f"El tiempo para calcular la inversa de una matriz 100 por 100 es de {tiempo2:.6f} segundos")
+    print(f"El tiempo para calcular la inversa de una matriz 100 por 100 es de {tiempo2:.6f} segundos.")
