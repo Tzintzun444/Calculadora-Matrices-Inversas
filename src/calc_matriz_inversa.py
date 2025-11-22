@@ -1,20 +1,24 @@
 from typing import Union, List
+from tests.comparador import comparar_diferencia_de_matrices
+from fractions import Fraction
+import time
+import math
 
 
 class CalcMatrizInversa:
 
-    def __init__(self, matriz: List[List[Union[int, float]]]):
+    def __init__(self, matriz: List[List[Union[int, float, Fraction]]]):
         self._matriz = matriz
         self._matriz_inversa = None
         self._es_invertible = None
         self.obtener_matriz_inversa()
 
     @property
-    def matriz(self) -> List[List[Union[int, float]]]:
+    def matriz(self) -> List[List[Union[int, float, Fraction]]]:
         return self._matriz
 
     @property
-    def matriz_inversa(self) -> List[List[Union[int, float]]]:
+    def matriz_inversa(self) -> List[List[Union[int, float, Fraction]]]:
         return self._matriz_inversa
 
     @property
@@ -22,7 +26,7 @@ class CalcMatrizInversa:
         return self._es_invertible
 
     @staticmethod
-    def es_cuadrada(matriz: List[List[Union[int, float]]]) -> bool:
+    def es_cuadrada(matriz: List[List[Union[int, float, Fraction]]]) -> bool:
         filas = len(matriz)
         for fila in matriz:
             if len(fila) != filas:
@@ -30,7 +34,7 @@ class CalcMatrizInversa:
         return True
 
     @staticmethod
-    def sin_fila_columna_0(matriz: List[List[Union[int, float]]]) -> bool:
+    def sin_fila_columna_0(matriz: List[List[Union[int, float, Fraction]]]) -> bool:
         dimension = len(matriz)
         if [0] * dimension in matriz:
             return False
@@ -40,28 +44,31 @@ class CalcMatrizInversa:
         return True
 
     @staticmethod
-    def multiplicar_fila_por_escalar(fila: List[int], k: Union[int, float]) -> List[Union[int, float]]:
+    def multiplicar_fila_por_escalar(fila: List[int], k: Union[int, float]) -> List[Union[int, float, Fraction]]:
         return [numero * k for numero in fila]
 
     @staticmethod
-    def sumar_fila_a_otro(fila1: List[int], fila2: List[int]) -> List[Union[int, float]]:
+    def sumar_fila_a_otro(fila1: List[int], fila2: List[int]) -> List[Union[int, float, Fraction]]:
         return [num1 + num2 for num1, num2 in zip(fila1, fila2)]
 
     @classmethod
-    def multiplicar_fila_y_sumarla(cls, fila_a_multiplicar: List[int], k: Union[int, float],
-                                   fila_a_sumar: List[int]) -> List[Union[int, float]]:
+    def multiplicar_fila_y_sumarla(cls, fila_a_multiplicar: List[Union[int, float, Fraction]],
+                                   k: Union[int, float, Fraction],
+                                   fila_a_sumar: List[Union[int, float, Fraction]]
+                                   ) -> List[Union[int, float, Fraction]]:
         return cls.sumar_fila_a_otro(cls.multiplicar_fila_por_escalar(fila_a_multiplicar, k),
                                      fila_a_sumar)
 
     @staticmethod
-    def intercambiar_filas(matriz: List[List[Union[int, float]]], num_fila: int) -> List[List[Union[int, float]]]:
+    def intercambiar_filas(matriz: List[List[Union[int, float, Fraction]]], num_fila: int
+                           ) -> List[List[Union[int, float, Fraction]]]:
         fila_a_mover = matriz[num_fila].copy()
         matriz.pop(num_fila)
         matriz.append(fila_a_mover)
         return matriz
 
     @staticmethod
-    def generar_matriz_identidad(dimension: int) -> List[List[Union[int, float]]]:
+    def generar_matriz_identidad(dimension: int) -> List[List[Union[int, float, Fraction]]]:
         matriz_identidad = [[0] * dimension for _ in range(dimension)]
         for i in range(dimension):
             matriz_identidad[i][i] += 1
@@ -118,5 +125,23 @@ class CalcMatrizInversa:
                                                                                         pivote],
                                                                                     matriz_escalonada[pivote - i - 1])
             pivote -= 1
+        if not comparar_diferencia_de_matrices(matriz_escalonada, self.generar_matriz_identidad(len(matriz_escalonada)),
+                                               0.0000000000000000000000000000001):
+            self._es_invertible = False
+            self._matriz_inversa = []
+            return None
         self._es_invertible = True
         self._matriz_inversa = matriz_inversa
+
+
+if __name__ == '__main__':
+    inicio1 = time.perf_counter()
+    CalcMatrizInversa([[Fraction(math.comb(i, j)) for j in range(50)] for i in range(50)])
+    fin1 = time.perf_counter()
+    tiempo1 = fin1 - inicio1
+    print(f"El tiempo para calcular la inversa de una matriz 50 por 50 es de {tiempo1:.6f} segundos")
+    inicio2 = time.perf_counter()
+    CalcMatrizInversa([[Fraction(math.comb(i, j)) for j in range(100)] for i in range(100)])
+    fin2 = time.perf_counter()
+    tiempo2 = fin2 - inicio2
+    print(f"El tiempo para calcular la inversa de una matriz 100 por 100 es de {tiempo2:.6f} segundos")
